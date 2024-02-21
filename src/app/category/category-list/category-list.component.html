@@ -1,67 +1,66 @@
+<!-- ------ -->
+<!-- Header -->
+<!-- ------ -->
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title>Categories</ion-title>
-  </ion-toolbar>
-  <ion-toolbar>
-    <ion-grid>
-      <ion-row>
-        <ion-col>
-          <ion-icon name="logo-ionic" size="large"></ion-icon>
-          <ion-select label="Name (A-Z)" label-placement="floating" fill="outline">
-            <ion-select-option value="A-Z">A-Z</ion-select-option>
-            <ion-select-option value="Z-A">Z-A</ion-select-option>
-            <ion-select-option value="Default">Default</ion-select-option>
-            <ion-select-option value="2 Default">2 Default</ion-select-option>
-          </ion-select>
-        </ion-col>
-        <ion-col>
-          <ion-toolbar>
-            <ion-searchbar></ion-searchbar>
-          </ion-toolbar>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="light">
-  <ion-list [inset]="true">
-    <ion-item-sliding>
-      <ion-item detail="true">
-        <ion-label>
-          <h3>Auswärts Essen</h3>
-        </ion-label>
-      </ion-item>
+<!-- ------- -->
+<!-- Content -->
+<!-- ------- -->
+<ion-content>
+  <!-- Search & sort -->
+  <ion-grid class="ion-padding">
+    <ion-row>
+      <ion-col size="12" size-sm="6">
+        <ion-item>
+          <ion-icon name="swap-vertical" slot="start"></ion-icon>
+          <ion-select interface="popover" value="Name (A-Z)">
+            <ion-select-option>Created at (newest first)</ion-select-option>
+            <ion-select-option>Created at (oldest first)</ion-select-option>
+            <ion-select-option>Name (A-Z)</ion-select-option>
+            <ion-select-option>Name (Z-A)</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+      <ion-col size="12" size-sm="6">
+        <ion-item>
+          <ion-icon name="search" slot="start"></ion-icon>
+          <ion-input maxlength="40" placeholder="Search" [clearInput]="true"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
-      <ion-item detail="true">
-        <ion-label>
-          <h3>Lebensmittel</h3>
-        </ion-label>
-      </ion-item>
-
-      <ion-item detail="true">
-        <ion-label>
-          <h3>Unterhaltung</h3>
-        </ion-label>
-      </ion-item>
-
-      <ion-item detail="true">
-        <ion-label>
-          <h3>Versicherung</h3>
-        </ion-label>
-      </ion-item>
-
-      <ion-item detail="true">
-        <ion-label>
-          <h3>ÖV</h3>
-        </ion-label>
-      </ion-item>
-    </ion-item-sliding>
+  <!-- Category list -->
+  <ion-list inset="true">
+    <!-- Categories -->
+    <ion-item button="true" [detail]="true" (click)="openModal()">
+      <ion-label>Auswärts Essen</ion-label>
+    </ion-item>
+    <ion-item button="true" [detail]="true" (click)="openModal()">
+      <ion-label>Lebensmittel</ion-label>
+    </ion-item>
+    <ion-item button="true" [detail]="true" (click)="openModal()">
+      <ion-label>Unterhaltung</ion-label>
+    </ion-item>
+    <ion-item button="true" [detail]="true" (click)="openModal()">
+      <ion-label>Versicherung</ion-label>
+    </ion-item>
+    <ion-item button="true" [detail]="true" (click)="openModal()">
+      <ion-label>ÖV</ion-label>
+    </ion-item>
   </ion-list>
-</ion-content>
 
-<ion-fab slot="fixed" vertical="bottom" horizontal="end">
-  <ion-fab-button>
-    <ion-icon name="add"></ion-icon>
-  </ion-fab-button>
-</ion-fab>
+  <!-- Create fab button -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
