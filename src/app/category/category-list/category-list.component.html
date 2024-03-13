@@ -3,6 +3,7 @@
 <!-- ------ -->
 <ion-header>
   <ion-toolbar>
+    <ion-progress-bar *ngIf="loading" type="indeterminate"></ion-progress-bar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
@@ -37,25 +38,46 @@
     </ion-row>
   </ion-grid>
 
-  <!-- Category list -->
-  <ion-list inset="true">
+  <!-- Category List -->
+  <ion-list [ngSwitch]="categories?.length" inset="true">
+    <!-- Skeleton -->
+    <ng-container *ngSwitchCase="null">
+      <ion-item *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]">
+        <ion-label>
+          <ion-skeleton-text [animated]="true" style="width: 80px"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+    </ng-container>
+
+    <!-- Empty List -->
+    <ion-item *ngSwitchCase="0">
+      <ion-icon slot="start" name="alert-circle-outline"></ion-icon>
+      <ion-label> No categories found </ion-label>
+    </ion-item>
+
     <!-- Categories -->
-    <ion-item button="true" [detail]="true" (click)="openModal()">
-      <ion-label>Auswärts Essen</ion-label>
-    </ion-item>
-    <ion-item button="true" [detail]="true" (click)="openModal()">
-      <ion-label>Lebensmittel</ion-label>
-    </ion-item>
-    <ion-item button="true" [detail]="true" (click)="openModal()">
-      <ion-label>Unterhaltung</ion-label>
-    </ion-item>
-    <ion-item button="true" [detail]="true" (click)="openModal()">
-      <ion-label>Versicherung</ion-label>
-    </ion-item>
-    <ion-item button="true" [detail]="true" (click)="openModal()">
-      <ion-label>ÖV</ion-label>
-    </ion-item>
+    <ng-container *ngSwitchDefault>
+      <ion-item
+        button="true"
+        *ngFor="let category of categories"
+        [detail]="true"
+        [disabled]="loading"
+        (click)="openModal(category)"
+      >
+        <ion-label> {{ category.name }} </ion-label>
+      </ion-item>
+    </ng-container>
   </ion-list>
+
+  <!-- Infinite Scroll -->
+  <ion-infinite-scroll [disabled]="lastPageReached || loading" (ionInfinite)="loadNextCategoryPage($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <!-- Refresher -->
+  <ion-refresher slot="fixed" (ionRefresh)="reloadCategories($event)" [disabled]="loading">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
   <!-- Create fab button -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
