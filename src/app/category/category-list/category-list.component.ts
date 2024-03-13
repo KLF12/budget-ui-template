@@ -25,6 +25,7 @@ export class CategoryListComponent {
     { label: 'Name (Z-A)', value: 'name,desc' },
   ];
   private readonly searchFormSubscription: Subscription;
+
   constructor(
     private readonly formBuilder: FormBuilder,
     private readonly modalCtrl: ModalController,
@@ -39,26 +40,35 @@ export class CategoryListComponent {
         this.loadCategories();
       });
   }
+
   loadNextCategoryPage($event: any) {
     this.searchCriteria.page++;
     this.loadCategories(() => ($event as InfiniteScrollCustomEvent).target.complete());
   }
+
   reloadCategories($event?: any): void {
     this.searchCriteria.page = 0;
     this.loadCategories(() => ($event ? ($event as RefresherCustomEvent).target.complete() : {}));
   }
+
   ionViewDidLeave(): void {
     this.searchFormSubscription.unsubscribe();
   }
+
   ionViewDidEnter(): void {
     this.loadCategories();
   }
+
   async openModal(category?: Category): Promise<void> {
-    const modal = await this.modalCtrl.create({ component: CategoryModalComponent });
+    const modal = await this.modalCtrl.create({
+      component: CategoryModalComponent,
+      componentProps: { category: category ? { ...category } : {} },
+    });
     modal.present();
     const { role } = await modal.onWillDismiss();
     if (role === 'refresh') this.reloadCategories();
   }
+
   private loadCategories(next: () => void = () => {}): void {
     if (!this.searchCriteria.name) delete this.searchCriteria.name;
     this.loading = true;

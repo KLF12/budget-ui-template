@@ -51,7 +51,7 @@
     <!-- Empty List -->
     <ion-item *ngSwitchCase="0">
       <ion-icon slot="start" name="alert-circle-outline"></ion-icon>
-      <ion-label> No categories found </ion-label>
+      <ion-label> No categories found</ion-label>
     </ion-item>
 
     <!-- Categories -->
@@ -63,7 +63,7 @@
         [disabled]="loading"
         (click)="openModal(category)"
       >
-        <ion-label> {{ category.name }} </ion-label>
+        <ion-label> {{ category.name }}</ion-label>
       </ion-item>
     </ng-container>
   </ion-list>
