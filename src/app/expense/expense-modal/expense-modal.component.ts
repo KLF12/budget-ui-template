@@ -34,4 +34,6 @@ export class ExpenseModalComponent {
     const { role } = await categoryModal.onWillDismiss();
     console.log('role', role);
   }
+
+  openModal(category: any) {}
 }
