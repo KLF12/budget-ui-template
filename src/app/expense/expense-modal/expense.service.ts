@@ -6,7 +6,7 @@ import { AllCategoryCriteria, Category, CategoryCriteria } from '../../shared/do
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
-export class CategoryService {
+export class ExpenseService {
   private readonly apiUrl = `${environment.backendUrl}/categories`;
   private readonly apiV2Url = `${environment.backendUrl}/v2/categories`;
 
@@ -14,17 +14,14 @@ export class CategoryService {
 
   // Read
 
-  getCategories = (pagingCriteria: CategoryCriteria): Observable<Page<Category>> =>
+  getExpenses = (pagingCriteria: CategoryCriteria): Observable<Page<Category>> =>
     this.httpClient.get<Page<Category>>(this.apiUrl, { params: new HttpParams({ fromObject: { ...pagingCriteria } }) });
-
-  getAllCategories = (sortCriteria: AllCategoryCriteria): Observable<Category[]> =>
-    this.httpClient.get<Category[]>(this.apiV2Url, { params: new HttpParams({ fromObject: { ...sortCriteria } }) });
 
   // Create & Update
 
-  upsertCategory = (category: Category): Observable<void> => this.httpClient.put<void>(this.apiUrl, category);
+  upsertExpense = (category: Category): Observable<void> => this.httpClient.put<void>(this.apiUrl, category);
 
   // Delete
 
-  deleteCategory = (id: string): Observable<void> => this.httpClient.delete<void>(`${this.apiUrl}/${id}`);
+  deleteExpense = (id: string): Observable<void> => this.httpClient.delete<void>(`${this.apiUrl}/${id}`);
 }

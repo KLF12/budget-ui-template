@@ -64,7 +64,7 @@ export class CategoryListComponent {
       component: CategoryModalComponent,
       componentProps: { category: category ? { ...category } : {} },
     });
-    modal.present();
+    await modal.present();
     const { role } = await modal.onWillDismiss();
     if (role === 'refresh') this.reloadCategories();
   }

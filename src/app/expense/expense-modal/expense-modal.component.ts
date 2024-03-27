@@ -3,6 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { filter, from } from 'rxjs';
 import { CategoryModalComponent } from '../../category/category-modal/category-modal.component';
 import { ActionSheetService } from '../../shared/service/action-sheet.service';
+import { Category } from '../../shared/domain';
 
 @Component({
   selector: 'app-expense-modal',
@@ -34,6 +35,4 @@ export class ExpenseModalComponent {
     const { role } = await categoryModal.onWillDismiss();
     console.log('role', role);
   }
-
-  openModal(category: any) {}
 }

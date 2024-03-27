@@ -2,13 +2,15 @@ import { Component } from '@angular/core';
 import { addMonths, set } from 'date-fns';
 import { ModalController } from '@ionic/angular';
 import { ExpenseModalComponent } from '../expense-modal/expense-modal.component';
-import { Expense } from '../../shared/domain';
+import { Category, Expense } from '../../shared/domain';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-expense-overview',
   templateUrl: './expense-list.component.html',
 })
 export class ExpenseListComponent {
+  categories: Category[] | null = null;
   date = set(new Date(), { date: 1 });
 
   constructor(private readonly modalCtrl: ModalController) {}
@@ -16,6 +18,7 @@ export class ExpenseListComponent {
   addMonths = (number: number): void => {
     this.date = addMonths(this.date, number);
   };
+  loading: any;
 
   async openModal(expense?: Expense): Promise<void> {
     const modal = await this.modalCtrl.create({
