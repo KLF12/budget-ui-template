@@ -29,7 +29,9 @@ Expense List
         <ion-item>
           <ion-icon name="pricetag" slot="start"></ion-icon>
           <ion-select interface="popover" placeholder="Category">
-            <ion-select-option>categories</ion-select-option>
+            <ion-select-option *ngFor="let category of categories" [value]="category.id">{{
+              category.name
+            }}</ion-select-option>
           </ion-select>
         </ion-item>
       </ion-col>

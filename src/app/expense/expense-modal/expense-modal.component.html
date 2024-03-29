@@ -1,8 +1,9 @@
 Expense Modal
 <ion-header>
   <ion-toolbar>
+    <ion-progress-bar *ngIf="submitting" type="indeterminate"></ion-progress-bar>
     <ion-buttons slot="start">
-      <ion-button color="medium" (click)="cancel()">
+      <ion-button color="medium" (click)="cancel()" [disabled]="submitting">
         <ion-icon slot="start" name="close"></ion-icon>
         Cancel
       </ion-button>
@@ -11,7 +12,7 @@ Expense Modal
     <ion-title>Add Expense</ion-title>
 
     <ion-buttons slot="end">
-      <ion-button (click)="save()">
+      <ion-button (click)="save()" [disabled]="expenseForm.pristine || expenseForm.invalid || submitting">
         <ion-icon slot="start" name="save"></ion-icon>
         Save
       </ion-button>
@@ -22,16 +23,24 @@ Expense Modal
 <!-- ------- -->
 <!-- Content -->
 <!-- ------- -->
-<ion-content class="ion-padding">
+<ion-content class="ion-padding" [formGroup]="expenseForm">
   <ion-item>
     <ion-icon name="text" slot="start"></ion-icon>
-    <ion-input maxlength="40" placeholder="Enter the expense's name" required></ion-input>
+    <ion-input
+      [disabled]="submitting"
+      formControlName="name"
+      maxlength="40"
+      placeholder="Enter the expense's name"
+      required="true"
+    ></ion-input>
   </ion-item>
 
   <ion-item>
     <ion-icon name="pricetag" slot="start"></ion-icon>
     <ion-select interface="popover" placeholder="Choose a Category">
-      <ion-select-option>Choose a Category</ion-select-option>
+      <ion-select-option *ngFor="let category of categories" [value]="category.id">{{
+        category.name
+      }}</ion-select-option>
     </ion-select>
     <ion-button (click)="showCategoryModal()">
       <ion-icon name="add-outline"></ion-icon>

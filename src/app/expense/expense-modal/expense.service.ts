@@ -5,21 +5,23 @@ import { Expense, ExpenseUpsertDto, ExpenseCriteria, Page } from '../../shared/d
 import { AllCategoryCriteria, Category, CategoryCriteria } from '../../shared/domain';
 import { environment } from '../../../environments/environment';
 
+class expenseForm {}
+
 @Injectable({ providedIn: 'root' })
 export class ExpenseService {
-  private readonly apiUrl = `${environment.backendUrl}/categories`;
-  private readonly apiV2Url = `${environment.backendUrl}/v2/categories`;
+  private readonly apiUrl = `${environment.backendUrl}/expenses`;
+  private readonly apiV2Url = `${environment.backendUrl}/v2/expenses`;
 
   constructor(private readonly httpClient: HttpClient) {}
 
   // Read
 
   getExpenses = (pagingCriteria: CategoryCriteria): Observable<Page<Category>> =>
-    this.httpClient.get<Page<Category>>(this.apiUrl, { params: new HttpParams({ fromObject: { ...pagingCriteria } }) });
+    this.httpClient.get<Page<Expense>>(this.apiUrl, { params: new HttpParams({ fromObject: { ...pagingCriteria } }) });
 
   // Create & Update
 
-  upsertExpense = (category: Category): Observable<void> => this.httpClient.put<void>(this.apiUrl, category);
+  upsertExpense = (Expense: expenseForm): Observable<void> => this.httpClient.put<void>(this.apiUrl, Expense);
 
   // Delete
 
