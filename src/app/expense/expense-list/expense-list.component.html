@@ -52,6 +52,10 @@ Expense List
     </ion-item>
   </ion-list>
 
+  <ion-item-group *ngFor="let expenseGroup of expenseGroups">
+    <ion-item *ngFor="let expense of expenseGroup.expenses"> </ion-item>
+  </ion-item-group>
+
   <!-- Create fab button -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button (click)="openModal()">
