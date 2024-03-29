@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { addMonths, set } from 'date-fns';
-import { ModalController } from '@ionic/angular';
+import { InfiniteScrollCustomEvent, ModalController, RefresherCustomEvent } from '@ionic/angular';
 import { ExpenseModalComponent } from '../expense-modal/expense-modal.component';
-import { Category, CategoryCriteria, Expense, ExpenseCriteria } from '../../shared/domain';
+import { Category, CategoryCriteria, Expense, ExpenseCriteria, SortOption } from '../../shared/domain';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CategoryService } from '../../category/category.service';
 import { ToastService } from '../../shared/service/toast.service';
-import { debounce, finalize, from, groupBy, interval, mergeMap, toArray } from 'rxjs';
+import { debounce, finalize, from, groupBy, interval, mergeMap, Subscription, toArray } from 'rxjs';
 import { formatPeriod } from '../../shared/period';
 import { ExpenseService } from '../expense-modal/expense.service';
 
@@ -26,6 +26,16 @@ export class ExpenseListComponent {
   lastPageReached = false;
   loading = false;
   searchCriteria: ExpenseCriteria = { page: 0, size: 25, sort: this.initialSort };
+  readonly searchForm: FormGroup;
+  readonly sortOptions: SortOption[] = [
+    { label: 'Created at (newest first)', value: 'createdAt,desc' },
+    { label: 'Created at (oldest first)', value: 'createdAt,asc' },
+    { label: 'Date (newest first)', value: 'categoryIds,asc' },
+    { label: 'Date (oldest first)', value: 'categoryIds,desc' },
+    { label: 'Name (A-Z)', value: 'name,asc' },
+    { label: 'Name (Z-A)', value: 'name,desc' },
+  ];
+  private readonly searchFormSubscription: Subscription;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -33,9 +43,29 @@ export class ExpenseListComponent {
     private readonly categoryService: CategoryService,
     private readonly toastService: ToastService,
     private readonly expenseService: ExpenseService,
-  ) {}
+  ) {
+    this.searchForm = this.formBuilder.group({ name: [], sort: [this.initialSort] });
+    this.searchFormSubscription = this.searchForm.valueChanges
+      .pipe(debounce((value) => interval(value.name?.length ? 400 : 0)))
+      .subscribe((value) => {
+        this.searchCriteria = { ...this.searchCriteria, ...value, page: 0 };
+        this.loadAllCategories();
+      });
+  }
+  loadNextExpensePage($event: any) {
+    this.searchCriteria.page++;
+    this.loadExpenses(() => ($event as InfiniteScrollCustomEvent).target.complete());
+  }
+
+  reloadExpenses($event?: any): void {
+    this.searchCriteria.page = 0;
+    this.loadExpenses(() => ($event ? ($event as RefresherCustomEvent).target.complete() : {}));
+  }
   ionViewWillEnter(): void {
     this.loadAllCategories();
+  }
+  ionViewDidLeave(): void {
+    this.searchFormSubscription.unsubscribe();
   }
   addMonths = (number: number): void => {
     this.date = addMonths(this.date, number);

@@ -9,7 +9,7 @@ Expense Modal
       </ion-button>
     </ion-buttons>
 
-    <ion-title>Add Expense</ion-title>
+    <ion-title>{{ expense.id ? 'Edit' : 'Add' }} category</ion-title>
 
     <ion-buttons slot="end">
       <ion-button (click)="save()" [disabled]="expenseForm.pristine || expenseForm.invalid || submitting">
@@ -62,4 +62,10 @@ Expense Modal
       </ng-template>
     </ion-modal>
   </ion-item>
+
+  <ion-fab *ngIf="expense.id" slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="delete()" color="danger" [disabled]="submitting">
+      <ion-icon name="trash"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

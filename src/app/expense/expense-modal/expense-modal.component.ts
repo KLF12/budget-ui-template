@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { filter, finalize, from } from 'rxjs';
+import { filter, finalize, from, mergeMap, tap } from 'rxjs';
 import { CategoryModalComponent } from '../../category/category-modal/category-modal.component';
 import { ActionSheetService } from '../../shared/service/action-sheet.service';
 import { Category, Expense } from '../../shared/domain';
@@ -43,8 +43,10 @@ export class ExpenseModalComponent {
   }
 
   ionViewWillEnter(): void {
+    this.expenseForm.patchValue(this.expense);
     this.loadAllCategories();
   }
+
   save(): void {
     this.submitting = true;
     this.expenseService.upsertExpense({
@@ -55,8 +57,19 @@ export class ExpenseModalComponent {
 
   delete(): void {
     from(this.actionSheetService.showDeletionConfirmation('Are you sure you want to delete this expense?'))
-      .pipe(filter((action) => action === 'delete'))
-      .subscribe(() => this.modalCtrl.dismiss(null, 'delete'));
+      .pipe(
+        filter((action) => action === 'delete'),
+        tap(() => (this.submitting = true)),
+        mergeMap(() => this.expenseService.deleteExpense(this.expense.id!)),
+        finalize(() => (this.submitting = false)),
+      )
+      .subscribe({
+        next: () => {
+          this.toastService.displaySuccessToast('Expense deleted');
+          this.modalCtrl.dismiss(null, 'refresh');
+        },
+        error: (error) => this.toastService.displayErrorToast('Could not delete expense', error),
+      });
   }
 
   async showCategoryModal(): Promise<void> {
