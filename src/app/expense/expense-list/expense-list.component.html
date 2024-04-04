@@ -27,6 +27,7 @@
           </ion-select>
         </ion-item>
       </ion-col>
+      <!-- Category filter -->
       <ion-col size="8" size-sm="4">
         <ion-item>
           <ion-icon name="pricetag" slot="start"></ion-icon>
@@ -37,6 +38,7 @@
           </ion-select>
         </ion-item>
       </ion-col>
+      <!-- Search input -->
       <ion-col size="8" size-sm="4">
         <ion-item>
           <ion-icon name="search" slot="start"></ion-icon>
@@ -46,17 +48,41 @@
     </ion-row>
   </ion-grid>
 
-  <ion-list>
-    <ion-item-group *ngFor="let expenseGroup of expenseGroups">
-      <ion-item *ngFor="let Expense of expenseGroup.expenses"> </ion-item>
-    </ion-item-group>
-
-    <!-- Categories -->
-    <ion-item button="true" [detail]="true" (click)="openModal()">
-      <ion-icon slot="start" name="alert-circle-outline"></ion-icon>
-      <ion-label>No expenses found</ion-label>
-    </ion-item>
+  <!-- Expense List -->
+  <ion-list *ngIf="expenseGroups && expenseGroups.length > 0">
+    <!-- Expense Groups -->
+    <ng-container *ngFor="let expenseGroup of expenseGroups">
+      <!-- Group Header -->
+      <ion-item-divider sticky>
+        <ion-label>{{ expenseGroup.date }}</ion-label>
+      </ion-item-divider>
+      <!-- Expenses within Group -->
+      <ion-item *ngFor="let expense of expenseGroup.expenses">
+        <!-- Name and Category -->
+        <ion-label>{{ expense.name }}</ion-label>
+        <ion-label *ngIf="expense.category">{{ expense.category.name }}</ion-label>
+        <!-- Amount -->
+        <ion-label slot="end">{{ expense.amount | currency }}</ion-label>
+        <!-- Date -->
+        <ion-label slot="end">{{ expense.date | date }}</ion-label>
+      </ion-item>
+    </ng-container>
   </ion-list>
+
+  <!-- No Expenses Message -->
+  <ion-item *ngIf="!loading && (!expenseGroups || expenseGroups.length === 0)">
+    <ion-icon slot="start" name="alert-circle-outline"></ion-icon>
+    <ion-label>No expenses found</ion-label>
+  </ion-item>
+
+  <!-- Loading Skeletons -->
+  <ng-container *ngIf="loading">
+    <ion-item *ngFor="let i of [0, 1, 2, 3, 4]">
+      <ion-label>
+        <ion-skeleton-text [animated]="true" style="width: 80%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+  </ng-container>
 
   <!-- Infinite Scroll -->
   <ion-infinite-scroll [disabled]="lastPageReached || loading" (ionInfinite)="loadNextExpensePage($event)">
@@ -67,6 +93,12 @@
   <ion-refresher slot="fixed" (ionRefresh)="reloadExpenses($event)" [disabled]="loading">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
+
+  <!-- Categories -->
+  <ion-item button="true" [detail]="true" (click)="openModal()">
+    <ion-icon slot="start" name="alert-circle-outline"></ion-icon>
+    <ion-label>No expenses found</ion-label>
+  </ion-item>
 
   <!-- Create fab button -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
