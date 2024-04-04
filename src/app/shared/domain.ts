@@ -10,11 +10,7 @@ export interface PagingCriteria extends SortCriteria {
   page: number;
   size: number;
 }
-export interface PagingCriteria {
-  page: number;
-  size: number;
-  sort: string;
-}
+
 export interface Page<T> {
   content: T[];
   last: boolean;

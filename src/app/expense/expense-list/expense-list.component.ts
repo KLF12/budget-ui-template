@@ -2,30 +2,31 @@ import { Component } from '@angular/core';
 import { addMonths, set } from 'date-fns';
 import { InfiniteScrollCustomEvent, ModalController, RefresherCustomEvent } from '@ionic/angular';
 import { ExpenseModalComponent } from '../expense-modal/expense-modal.component';
-import { Category, CategoryCriteria, Expense, ExpenseCriteria, SortOption } from '../../shared/domain';
+import { Category, Expense, ExpenseCriteria, SortOption } from '../../shared/domain';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CategoryService } from '../../category/category.service';
 import { ToastService } from '../../shared/service/toast.service';
 import { debounce, finalize, from, groupBy, interval, mergeMap, Subscription, toArray } from 'rxjs';
 import { formatPeriod } from '../../shared/period';
-import { ExpenseService } from '../expense-modal/expense.service';
+import { ExpenseService } from '../expense.service';
 
 interface ExpenseGroup {
   date: string;
   expenses: Expense[];
 }
+
 @Component({
   selector: 'app-expense-overview',
   templateUrl: './expense-list.component.html',
 })
 export class ExpenseListComponent {
-  categories: Category[] = [];
   expenseGroups: ExpenseGroup[] | null = null;
-  date = set(new Date(), { date: 1 });
   readonly initialSort = 'name,asc';
   lastPageReached = false;
   loading = false;
   searchCriteria: ExpenseCriteria = { page: 0, size: 25, sort: this.initialSort };
+  date = set(new Date(), { date: 1 });
+  categories: Category[] = [];
   readonly searchForm: FormGroup;
   readonly sortOptions: SortOption[] = [
     { label: 'Created at (newest first)', value: 'createdAt,desc' },
@@ -52,6 +53,12 @@ export class ExpenseListComponent {
         this.loadAllCategories();
       });
   }
+
+  ionViewWillEnter(): void {
+    this.loadExpenses();
+    this.loadAllCategories();
+  }
+
   loadNextExpensePage($event: any) {
     this.searchCriteria.page++;
     this.loadExpenses(() => ($event as InfiniteScrollCustomEvent).target.complete());
@@ -61,12 +68,11 @@ export class ExpenseListComponent {
     this.searchCriteria.page = 0;
     this.loadExpenses(() => ($event ? ($event as RefresherCustomEvent).target.complete() : {}));
   }
-  ionViewWillEnter(): void {
-    this.loadAllCategories();
-  }
+
   ionViewDidLeave(): void {
     this.searchFormSubscription.unsubscribe();
   }
+
   addMonths = (number: number): void => {
     this.date = addMonths(this.date, number);
   };
@@ -76,23 +82,24 @@ export class ExpenseListComponent {
       component: ExpenseModalComponent,
       componentProps: { expense: expense ? { ...expense } : {} },
     });
-    modal.present();
+    await modal.present();
     const { role } = await modal.onWillDismiss();
     console.log('role', role);
   }
+
   private loadAllCategories(): void {
     this.categoryService.getAllCategories({ sort: 'name,asc' }).subscribe({
       next: (categories) => (this.categories = categories),
       error: (error) => this.toastService.displayErrorToast('Could not load categories', error),
     });
   }
+
   private loadExpenses(next: () => void = () => {}): void {
     this.searchCriteria.yearMonth = formatPeriod(this.date);
     if (!this.searchCriteria.categoryIds?.length) delete this.searchCriteria.categoryIds;
     if (!this.searchCriteria.name) delete this.searchCriteria.name;
     this.loading = true;
     const groupByDate = this.searchCriteria.sort.startsWith('date');
-    // @ts-ignore
     this.expenseService
       .getExpenses(this.searchCriteria)
       .pipe(

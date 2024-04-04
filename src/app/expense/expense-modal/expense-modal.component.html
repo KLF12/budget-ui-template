@@ -1,4 +1,3 @@
-Expense Modal
 <ion-header>
   <ion-toolbar>
     <ion-progress-bar *ngIf="submitting" type="indeterminate"></ion-progress-bar>
@@ -9,7 +8,7 @@ Expense Modal
       </ion-button>
     </ion-buttons>
 
-    <ion-title>{{ expense.id ? 'Edit' : 'Add' }} category</ion-title>
+    <ion-title>{{ expense.id ? 'Edit' : 'Add' }} Expense</ion-title>
 
     <ion-buttons slot="end">
       <ion-button (click)="save()" [disabled]="expenseForm.pristine || expenseForm.invalid || submitting">
@@ -37,7 +36,7 @@ Expense Modal
 
   <ion-item>
     <ion-icon name="pricetag" slot="start"></ion-icon>
-    <ion-select interface="popover" placeholder="Choose a Category">
+    <ion-select interface="popover" placeholder="Choose a Category" formControlName="categoryId">
       <ion-select-option *ngFor="let category of categories" [value]="category.id">{{
         category.name
       }}</ion-select-option>
@@ -49,16 +48,16 @@ Expense Modal
 
   <ion-item>
     <ion-icon name="cash-outline" slot="start"></ion-icon>
-    <ion-input maxlength="40" placeholder="Enter the amount in CHF" required></ion-input>
+    <ion-input maxlength="40" placeholder="Enter the amount in CHF" required formControlName="amount"></ion-input>
     <ion-note> CHF </ion-note>
   </ion-item>
 
   <ion-item>
-    <ion-icon name="calendar-outline" slot="start"></ion-icon>
     <ion-datetime-button datetime="datetime"></ion-datetime-button>
+    <ion-icon name="calendar-outline" slot="start"></ion-icon>
     <ion-modal [keepContentsMounted]="true">
       <ng-template>
-        <ion-datetime id="datetime"></ion-datetime>
+        <ion-datetime id="datetime" presentation="date" formControlName="date"></ion-datetime>
       </ng-template>
     </ion-modal>
   </ion-item>

@@ -8,10 +8,8 @@ import { CategoryService } from '../../category/category.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastService } from '../../shared/service/toast.service';
 import { save } from 'ionicons/icons';
-import { ExpenseService } from './expense.service';
+import { ExpenseService } from '../expense.service';
 import { formatISO, parseISO } from 'date-fns';
-
-class expenseForm {}
 
 @Component({
   selector: 'app-expense-modal',
@@ -34,6 +32,9 @@ export class ExpenseModalComponent {
   ) {
     this.expenseForm = this.formBuilder.group({
       id: [], // hidden
+      categoryId: [],
+      amount: [],
+      date: [formatISO(new Date())],
       name: ['', [Validators.required, Validators.maxLength(40)]],
     });
   }
@@ -46,13 +47,24 @@ export class ExpenseModalComponent {
     this.expenseForm.patchValue(this.expense);
     this.loadAllCategories();
   }
-
   save(): void {
     this.submitting = true;
-    this.expenseService.upsertExpense({
+    console.log(this.expenseForm.value);
+    const expenseData = {
       ...this.expenseForm.value,
       date: formatISO(parseISO(this.expenseForm.value.date), { representation: 'date' }),
-    });
+    };
+
+    this.expenseService
+      .upsertExpense(expenseData)
+      .pipe(finalize(() => (this.submitting = false)))
+      .subscribe({
+        next: () => {
+          this.toastService.displaySuccessToast('Expense saved');
+          this.modalCtrl.dismiss(null, 'refresh');
+        },
+        error: (error) => this.toastService.displayErrorToast('Could not save expense', error),
+      });
   }
 
   delete(): void {
@@ -74,7 +86,7 @@ export class ExpenseModalComponent {
 
   async showCategoryModal(): Promise<void> {
     const categoryModal = await this.modalCtrl.create({ component: CategoryModalComponent });
-    categoryModal.present();
+    await categoryModal.present();
     const { role } = await categoryModal.onWillDismiss();
     console.log('role', role);
   }

@@ -1,13 +1,18 @@
-Expense List
+<!-- ------ -->
+<!-- Header -->
+<!-- ------ -->
 <ion-header>
   <ion-toolbar>
+    <ion-progress-bar *ngIf="loading" type="indeterminate"></ion-progress-bar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Expenses</ion-title>
   </ion-toolbar>
 </ion-header>
-
+<!-- ------- -->
+<!-- Content -->
+<!-- ------- -->
 <ion-content>
   <!-- Search & sort -->
   <ion-grid class="ion-padding" [formGroup]="searchForm">
@@ -26,9 +31,9 @@ Expense List
         <ion-item>
           <ion-icon name="pricetag" slot="start"></ion-icon>
           <ion-select interface="popover" placeholder="Category">
-            <ion-select-option *ngFor="let category of categories" [value]="category.id">{{
-              category.name
-            }}</ion-select-option>
+            <ion-select-option *ngFor="let category of categories" [value]="category.id"
+              >{{ category.name }}
+            </ion-select-option>
           </ion-select>
         </ion-item>
       </ion-col>
@@ -41,17 +46,17 @@ Expense List
     </ion-row>
   </ion-grid>
 
-  <!-- Category list -->
-  <ion-list inset="true">
+  <ion-list>
+    <ion-item-group *ngFor="let expenseGroup of expenseGroups">
+      <ion-item *ngFor="let Expense of expenseGroup.expenses"> </ion-item>
+    </ion-item-group>
+
     <!-- Categories -->
     <ion-item button="true" [detail]="true" (click)="openModal()">
+      <ion-icon slot="start" name="alert-circle-outline"></ion-icon>
       <ion-label>No expenses found</ion-label>
     </ion-item>
   </ion-list>
-
-  <ion-item-group *ngFor="let expenseGroup of expenseGroups">
-    <ion-item *ngFor="let expense of expenseGroup.expenses"> </ion-item>
-  </ion-item-group>
 
   <!-- Infinite Scroll -->
   <ion-infinite-scroll [disabled]="lastPageReached || loading" (ionInfinite)="loadNextExpensePage($event)">
