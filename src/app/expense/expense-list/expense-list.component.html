@@ -69,7 +69,12 @@
   </ion-list>
 
   <!-- No Expenses Message -->
-  <ion-item *ngIf="!loading && (!expenseGroups || expenseGroups.length === 0)">
+  <ion-item
+    *ngIf="!loading && (!expenseGroups || expenseGroups.length === 0)"
+    button="true"
+    [detail]="true"
+    (click)="openModal()"
+  >
     <ion-icon slot="start" name="alert-circle-outline"></ion-icon>
     <ion-label>No expenses found</ion-label>
   </ion-item>
@@ -92,12 +97,6 @@
   <ion-refresher slot="fixed" (ionRefresh)="reloadExpenses($event)" [disabled]="loading">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-
-  <!-- Categories -->
-  <ion-item button="true" [detail]="true" (click)="openModal()">
-    <ion-icon slot="start" name="alert-circle-outline"></ion-icon>
-    <ion-label>No expenses found</ion-label>
-  </ion-item>
 
   <!-- Create fab button -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
