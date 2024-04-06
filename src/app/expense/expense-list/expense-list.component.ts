@@ -21,7 +21,7 @@ interface ExpenseGroup {
 })
 export class ExpenseListComponent {
   expenseGroups: ExpenseGroup[] | null = null;
-  readonly initialSort = 'name,asc';
+  readonly initialSort = 'date,desc';
   lastPageReached = false;
   loading = false;
   searchCriteria: ExpenseCriteria = { page: 0, size: 25, sort: this.initialSort };
@@ -31,8 +31,8 @@ export class ExpenseListComponent {
   readonly sortOptions: SortOption[] = [
     { label: 'Created at (newest first)', value: 'createdAt,desc' },
     { label: 'Created at (oldest first)', value: 'createdAt,asc' },
-    { label: 'Date (newest first)', value: 'categoryIds,asc' },
-    { label: 'Date (oldest first)', value: 'categoryIds,desc' },
+    { label: 'Date (newest first)', value: 'date,desc' },
+    { label: 'Date (oldest first)', value: 'date,asc' },
     { label: 'Name (A-Z)', value: 'name,asc' },
     { label: 'Name (Z-A)', value: 'name,desc' },
   ];
@@ -51,6 +51,7 @@ export class ExpenseListComponent {
       .subscribe((value) => {
         this.searchCriteria = { ...this.searchCriteria, ...value, page: 0 };
         this.loadAllCategories();
+        this.reloadExpenses();
       });
     this.searchForm.get('category')?.valueChanges.subscribe((selectedCategories: string[]) => {
       this.searchCriteria.categoryIds = selectedCategories;
@@ -60,13 +61,6 @@ export class ExpenseListComponent {
       this.searchCriteria.name = searchText;
       this.reloadExpenses();
     });
-
-    this.searchFormSubscription = this.searchForm.valueChanges
-      .pipe(debounce((value) => interval(value.name?.length ? 400 : 0)))
-      .subscribe((value) => {
-        this.searchCriteria = { ...this.searchCriteria, ...value, page: 0 };
-        this.loadAllCategories();
-      });
   }
 
   ionViewWillEnter(): void {
@@ -90,6 +84,7 @@ export class ExpenseListComponent {
 
   addMonths = (number: number): void => {
     this.date = addMonths(this.date, number);
+    this.reloadExpenses();
   };
 
   async openModal(expense?: Expense): Promise<void> {

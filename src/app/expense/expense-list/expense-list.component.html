@@ -64,8 +64,6 @@
         <ion-label *ngIf="expense.category">{{ expense.category.name }}</ion-label>
         <!-- Amount -->
         <ion-label slot="end">{{ expense.amount | currency }}</ion-label>
-        <!-- Date -->
-        <ion-label slot="end">{{ expense.date | date }}</ion-label>
       </ion-item>
     </ng-container>
   </ion-list>
@@ -91,7 +89,7 @@
   </ion-infinite-scroll>
 
   <!-- Refresher -->
-  <ion-refresher slot="fixed" (ionRefresh)="reloadExpenses($event)">
+  <ion-refresher slot="fixed" (ionRefresh)="reloadExpenses($event)" [disabled]="loading">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
