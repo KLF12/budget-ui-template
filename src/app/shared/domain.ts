@@ -66,7 +66,7 @@ export interface ExpenseUpsertDto {
 }
 
 export interface ExpenseCriteria extends PagingCriteria {
-  categoryIds?: string;
+  categoryIds?: string[];
   name?: string;
   yearMonth?: string;
 }

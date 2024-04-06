@@ -31,13 +31,14 @@
       <ion-col size="8" size-sm="4">
         <ion-item>
           <ion-icon name="pricetag" slot="start"></ion-icon>
-          <ion-select interface="popover" placeholder="Category">
-            <ion-select-option *ngFor="let category of categories" [value]="category.id"
-              >{{ category.name }}
-            </ion-select-option>
+          <ion-select interface="popover" placeholder="Category" formControlName="category" multiple="true">
+            <ion-select-option *ngFor="let category of categories" [value]="category.id">{{
+              category.name
+            }}</ion-select-option>
           </ion-select>
         </ion-item>
       </ion-col>
+
       <!-- Search input -->
       <ion-col size="8" size-sm="4">
         <ion-item>
@@ -90,7 +91,7 @@
   </ion-infinite-scroll>
 
   <!-- Refresher -->
-  <ion-refresher slot="fixed" (ionRefresh)="reloadExpenses($event)" [disabled]="loading">
+  <ion-refresher slot="fixed" (ionRefresh)="reloadExpenses($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 

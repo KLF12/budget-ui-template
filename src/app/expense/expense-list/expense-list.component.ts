@@ -45,7 +45,22 @@ export class ExpenseListComponent {
     private readonly toastService: ToastService,
     private readonly expenseService: ExpenseService,
   ) {
-    this.searchForm = this.formBuilder.group({ name: [], sort: [this.initialSort] });
+    this.searchForm = this.formBuilder.group({ name: [], sort: [this.initialSort], category: [[]] });
+    this.searchFormSubscription = this.searchForm.valueChanges
+      .pipe(debounce((value) => interval(value.name?.length ? 400 : 0)))
+      .subscribe((value) => {
+        this.searchCriteria = { ...this.searchCriteria, ...value, page: 0 };
+        this.loadAllCategories();
+      });
+    this.searchForm.get('category')?.valueChanges.subscribe((selectedCategories: string[]) => {
+      this.searchCriteria.categoryIds = selectedCategories;
+      this.reloadExpenses();
+    });
+    this.searchForm.get('name')?.valueChanges.subscribe((searchText: string) => {
+      this.searchCriteria.name = searchText;
+      this.reloadExpenses();
+    });
+
     this.searchFormSubscription = this.searchForm.valueChanges
       .pipe(debounce((value) => interval(value.name?.length ? 400 : 0)))
       .subscribe((value) => {
@@ -98,6 +113,7 @@ export class ExpenseListComponent {
     this.searchCriteria.yearMonth = formatPeriod(this.date);
     if (!this.searchCriteria.categoryIds?.length) delete this.searchCriteria.categoryIds;
     if (!this.searchCriteria.name) delete this.searchCriteria.name;
+    this.searchCriteria.sort = this.searchForm.get('sort')?.value;
     this.loading = true;
     const groupByDate = this.searchCriteria.sort.startsWith('date');
     this.expenseService
