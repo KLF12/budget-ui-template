@@ -102,6 +102,11 @@ export class ExpenseListComponent {
       },
     });
     await modal.present();
+    const { data } = await modal.onDidDismiss();
+    if (data === 'refresh') {
+      this.loadExpenses();
+    }
+    this.reloadExpenses();
   }
   async openExpenseModal(expense: Expense) {
     if (expense) {
@@ -115,6 +120,7 @@ export class ExpenseListComponent {
         this.loadExpenses();
       }
     }
+    this.reloadExpenses();
   }
   private loadAllCategories(): void {
     this.categoryService.getAllCategories({ sort: 'name,asc' }).subscribe({

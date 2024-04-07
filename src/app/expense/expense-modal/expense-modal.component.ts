@@ -43,7 +43,7 @@ export class ExpenseModalComponent implements OnInit {
       id: [this.expense.id],
       categoryId: [this.expense.category?.id],
       amount: [this.expense.amount],
-      date: [this.expense.date],
+      date: [new Date().toISOString()],
       name: [this.expense.name, [Validators.required, Validators.maxLength(40)]],
     });
   }
