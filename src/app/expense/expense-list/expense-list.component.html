@@ -58,7 +58,7 @@
         <ion-label>{{ expenseGroup.date }}</ion-label>
       </ion-item-divider>
       <!-- Expenses within Group -->
-      <ion-item *ngFor="let expense of expenseGroup.expenses">
+      <ion-item *ngFor="let expense of expenseGroup.expenses" (click)="openExpenseModal(expense)">
         <!-- Name and Category -->
         <ion-label>{{ expense.name }}</ion-label>
         <ion-label *ngIf="expense.category">{{ expense.category.name }}</ion-label>

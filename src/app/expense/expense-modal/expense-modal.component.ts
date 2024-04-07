@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, NavParams } from '@ionic/angular';
 import { filter, finalize, from, mergeMap, tap } from 'rxjs';
 import { CategoryModalComponent } from '../../category/category-modal/category-modal.component';
@@ -15,8 +15,8 @@ import { formatISO, parseISO } from 'date-fns';
   selector: 'app-expense-modal',
   templateUrl: './expense-modal.component.html',
 })
-export class ExpenseModalComponent {
-  readonly expenseForm: FormGroup;
+export class ExpenseModalComponent implements OnInit {
+  expenseForm: FormGroup;
   submitting = false;
   // Passed into the component by the ModalController, available in the ionViewWillEnter
   expense: Expense = {} as Expense;
@@ -24,9 +24,9 @@ export class ExpenseModalComponent {
 
   constructor(
     private readonly actionSheetService: ActionSheetService,
-    private readonly modalCtrl: ModalController,
+    private modalCtrl: ModalController,
     private readonly categoryService: CategoryService,
-    private readonly formBuilder: FormBuilder,
+    private formBuilder: FormBuilder,
     private readonly toastService: ToastService,
     private readonly expenseService: ExpenseService,
   ) {
@@ -36,6 +36,18 @@ export class ExpenseModalComponent {
       amount: [],
       date: [formatISO(new Date())],
       name: ['', [Validators.required, Validators.maxLength(40)]],
+    });
+  }
+
+  ngOnInit(): void {
+    this.expenseForm = this.formBuilder.group({
+      // Initialisiere das Formular mit den Werten des Expense-Objekts oder leeren Feldern
+      id: [this.expense.id],
+      categoryId: [this.expense.category?.id],
+      amount: [this.expense.amount],
+      // Stellen Sie sicher, dass das Datum korrekt initialisiert wird
+      date: [this.expense.date], // Wenn das Datum vorhanden ist, verwenden Sie es, sonst das aktuelle Datum
+      name: [this.expense.name, [Validators.required, Validators.maxLength(40)]],
     });
   }
 
@@ -49,14 +61,13 @@ export class ExpenseModalComponent {
   }
   save(): void {
     this.submitting = true;
-    console.log(this.expenseForm.value);
     const expenseData = {
       ...this.expenseForm.value,
       date: formatISO(parseISO(this.expenseForm.value.date), { representation: 'date' }),
     };
 
     this.expenseService
-      .upsertExpense(expenseData)
+      .upsertExpense(expenseData) // Verwenden Sie die upsertExpense-Methode, um die Ausgabe zu aktualisieren oder zu erstellen
       .pipe(finalize(() => (this.submitting = false)))
       .subscribe({
         next: () => {

@@ -9,6 +9,7 @@
     </ion-buttons>
 
     <ion-title>{{ expense.id ? 'Edit' : 'Add' }} Expense</ion-title>
+    <!-- Dynamischer Titel -->
 
     <ion-buttons slot="end">
       <ion-button (click)="save()" [disabled]="expenseForm.pristine || expenseForm.invalid || submitting">

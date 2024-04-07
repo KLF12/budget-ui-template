@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 import { addMonths, set } from 'date-fns';
-import { InfiniteScrollCustomEvent, ModalController, RefresherCustomEvent } from '@ionic/angular';
+import { InfiniteScrollCustomEvent, RefresherCustomEvent } from '@ionic/angular';
 import { ExpenseModalComponent } from '../expense-modal/expense-modal.component';
 import { Category, Expense, ExpenseCriteria, SortOption } from '../../shared/domain';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -27,6 +28,7 @@ export class ExpenseListComponent {
   searchCriteria: ExpenseCriteria = { page: 0, size: 25, sort: this.initialSort };
   date = set(new Date(), { date: 1 });
   categories: Category[] = [];
+  selectedExpense: Expense | null = null;
   readonly searchForm: FormGroup;
   readonly sortOptions: SortOption[] = [
     { label: 'Created at (newest first)', value: 'createdAt,desc' },
@@ -40,6 +42,7 @@ export class ExpenseListComponent {
 
   constructor(
     private readonly modalCtrl: ModalController,
+    private modalController: ModalController,
     private readonly formBuilder: FormBuilder,
     private readonly categoryService: CategoryService,
     private readonly toastService: ToastService,
@@ -87,16 +90,33 @@ export class ExpenseListComponent {
     this.reloadExpenses();
   };
 
-  async openModal(expense?: Expense): Promise<void> {
-    const modal = await this.modalCtrl.create({
+  selectExpense(expense: Expense) {
+    this.selectedExpense = expense;
+    this.openExpenseModal(expense);
+  }
+  async openModal() {
+    const modal = await this.modalController.create({
       component: ExpenseModalComponent,
-      componentProps: { expense: expense ? { ...expense } : {} },
+      componentProps: {
+        // Hier könntest du ggf. weitere Daten an das Modal übergeben
+      },
     });
     await modal.present();
-    const { role } = await modal.onWillDismiss();
-    console.log('role', role);
   }
-
+  async openExpenseModal(expense: Expense) {
+    if (expense) {
+      const modal = await this.modalController.create({
+        component: ExpenseModalComponent,
+        componentProps: { expense },
+      });
+      await modal.present();
+      const { data } = await modal.onWillDismiss();
+      if (data === 'refresh') {
+        // Aktualisieren Sie die Expense-Liste nach dem Schließen des Modalfensters
+        this.loadExpenses();
+      }
+    }
+  }
   private loadAllCategories(): void {
     this.categoryService.getAllCategories({ sort: 'name,asc' }).subscribe({
       next: (categories) => (this.categories = categories),
