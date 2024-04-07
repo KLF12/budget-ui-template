@@ -112,7 +112,6 @@ export class ExpenseListComponent {
       await modal.present();
       const { data } = await modal.onWillDismiss();
       if (data === 'refresh') {
-        // Aktualisieren Sie die Expense-Liste nach dem Schließen des Modalfensters
         this.loadExpenses();
       }
     }

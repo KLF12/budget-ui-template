@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController, NavParams } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { filter, finalize, from, mergeMap, tap } from 'rxjs';
 import { CategoryModalComponent } from '../../category/category-modal/category-modal.component';
 import { ActionSheetService } from '../../shared/service/action-sheet.service';
@@ -18,7 +18,6 @@ import { formatISO, parseISO } from 'date-fns';
 export class ExpenseModalComponent implements OnInit {
   expenseForm: FormGroup;
   submitting = false;
-  // Passed into the component by the ModalController, available in the ionViewWillEnter
   expense: Expense = {} as Expense;
   categories: Category[] = [];
 
@@ -41,12 +40,10 @@ export class ExpenseModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.expenseForm = this.formBuilder.group({
-      // Initialisiere das Formular mit den Werten des Expense-Objekts oder leeren Feldern
       id: [this.expense.id],
       categoryId: [this.expense.category?.id],
       amount: [this.expense.amount],
-      // Stellen Sie sicher, dass das Datum korrekt initialisiert wird
-      date: [this.expense.date], // Wenn das Datum vorhanden ist, verwenden Sie es, sonst das aktuelle Datum
+      date: [this.expense.date],
       name: [this.expense.name, [Validators.required, Validators.maxLength(40)]],
     });
   }
@@ -67,7 +64,7 @@ export class ExpenseModalComponent implements OnInit {
     };
 
     this.expenseService
-      .upsertExpense(expenseData) // Verwenden Sie die upsertExpense-Methode, um die Ausgabe zu aktualisieren oder zu erstellen
+      .upsertExpense(expenseData)
       .pipe(finalize(() => (this.submitting = false)))
       .subscribe({
         next: () => {
