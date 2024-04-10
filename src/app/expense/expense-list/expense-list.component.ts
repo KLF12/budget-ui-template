@@ -97,9 +97,7 @@ export class ExpenseListComponent {
   async openModal() {
     const modal = await this.modalController.create({
       component: ExpenseModalComponent,
-      componentProps: {
-        // Hier könntest du ggf. weitere Daten an das Modal übergeben
-      },
+      componentProps: {},
     });
     await modal.present();
     const { data } = await modal.onDidDismiss();
