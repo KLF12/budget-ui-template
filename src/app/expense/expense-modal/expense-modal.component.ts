@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { filter, finalize, from, mergeMap, tap } from 'rxjs';
 import { CategoryModalComponent } from '../../category/category-modal/category-modal.component';

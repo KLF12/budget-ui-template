@@ -90,10 +90,6 @@ export class ExpenseListComponent {
     this.reloadExpenses();
   };
 
-  selectExpense(expense: Expense) {
-    this.selectedExpense = expense;
-    this.openExpenseModal(expense);
-  }
   async openModal() {
     const modal = await this.modalController.create({
       component: ExpenseModalComponent,
